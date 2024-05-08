@@ -1,28 +1,24 @@
-import { Button, Col, Image, Nav, Row, Spinner } from "react-bootstrap";
-import ProfilePostCard from "./ProfilePostCard";
-import { useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
+import { useContext, useEffect } from "react";
+import { Button, Col, Image, Nav, Row, Spinner, Tab } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPostsByUser } from "../features/posts/postSlice";
-
+import { AuthContext } from "./AuthProvider";
+import ProfilePostCard from "./ProfilePostCard";
 
 export default function ProfileMidBody() {
-    const url = "https://pbs.twimg.com/profile_banners/83072625/1602845571/1500x500";
-    const pic = "https://pbs.twimg.com/profile_images/1587405892437221376/h167Jlb2_400x400.jpg";
+    const url =
+        "https://pbs.twimg.com/profile_banners/83072625/1602845571/1500x500";
+    const pic =
+        "https://pbs.twimg.com/profile_images/1587405892437221376/h167Jlb2_400x400.jpg";
 
     const dispatch = useDispatch();
     const posts = useSelector((state) => state.posts.posts);
     const loading = useSelector((state) => state.posts.loading);
+    const { currentUser } = useContext(AuthContext);
 
     useEffect(() => {
-        const token = localStorage.getItem("authToken");
-        if (token) {
-            const decodeToken = jwtDecode(token);
-            const userId = decodeToken.id;
-            dispatch(fetchPostsByUser(userId));
-        }
-    }, [dispatch]);
-
+        dispatch(fetchPostsByUser(currentUser.uid));
+    }, [dispatch, currentUser]);
     return (
         <Col sm={6} className="bg-light" style={{ border: "1px solid lightgrey" }}>
             <Image src={url} fluid />
@@ -32,14 +28,13 @@ export default function ProfileMidBody() {
                 src={pic}
                 roundedCircle
                 style={{
-                    width: 150,
                     position: "absolute",
                     top: "140px",
-                    border: "4px solid #F8F9FA",
                     marginLeft: 15,
+                    width: 150,
+                    border: "4px solid #F8F9FA",
                 }}
             />
-
             <Row className="justify-content-end">
                 <Col xs="auto">
                     <Button className="rounded-pill mt-2" variant="outline-secondary">
@@ -47,50 +42,67 @@ export default function ProfileMidBody() {
                     </Button>
                 </Col>
             </Row>
-            <p className="mt-5" style={{ margin: 0, fontWeight: "bold", fontSize: "15px" }}>
+            <p
+                className="mt-5"
+                style={{ margin: 0, fontWeight: "bold", fontSize: "15px" }}
+            >
                 Haris
             </p>
-
-            <p style={{ marginBottom: "2px" }}>
-                @haris.samingan
-            </p>
-
-            <p>I help people switch careers to be a software developer at sigmaschool.co</p>
-
+            <p style={{ marginBottom: "2px" }}>@haris.samingan</p>
+            <p>I help people</p>
             <p>Entrepreneur</p>
-
             <p>
-                <strong>271</strong> Following <strong>610</strong> followers
+                <strong>271</strong> Following <strong>610</strong> Followers
             </p>
 
-            <Nav variant="underline" defaultActiveKey="/home" justify>
-                <Nav.Item>
-                    <Nav.Link eventKey="/home">Tweets</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link eventKey="/link-1">Replies</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link eventKey="/link-2">Highlights</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link eventKey="/link-3">Media</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link eventKey="/link-4">Likes</Nav.Link>
-                </Nav.Item>
-            </Nav>
-            {loading && (
-                <Spinner animation="border" className="ms-5 mt-5 d-flex" variant="primary" />
-            )}
-            {posts.length > 0 && posts.map((post) => (
-                <ProfilePostCard
-                    key={post.id}
-                    content={post.content}
-                    postId={post.id}
-                    postDate={post.formatted_date}
-                />
-            ))}
+            <Tab.Container id="left-tabs-example" defaultActiveKey="tweets">
+                <Row>
+                    <Nav variant="underline" defaultActiveKey="tweets" justify>
+                        <Nav.Item>
+                            <Nav.Link eventKey="tweets">Tweets</Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link eventKey="replies">Replies</Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link eventKey="highlights">Highlights</Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link eventKey="media">Media</Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link eventKey="likes">Likes</Nav.Link>
+                        </Nav.Item>
+                    </Nav>
+
+                    <Tab.Content>
+                        <Tab.Pane eventKey="tweets" >
+                            {loading && (
+                                <Spinner animation="border" className="ms-3 mt-3" variant="primary" />
+                            )}
+                            {posts.map((post) => (
+                                <ProfilePostCard key={post.id} post={post} />
+                            ))}
+                        </Tab.Pane>
+
+                        <Tab.Pane eventKey="replies" className="text-center mt-5" >
+                            Nothing to show here at the moment
+                        </Tab.Pane>
+
+                        <Tab.Pane eventKey="highlights" className="text-center mt-5">
+                            Nothing to show here at the moment
+                        </Tab.Pane>
+
+                        <Tab.Pane eventKey="media" className="text-center mt-5">
+                            Nothing to show here at the moment
+                        </Tab.Pane>
+
+                        <Tab.Pane eventKey="likes" className="text-center mt-5">
+                            Nothing to show here at the moment
+                        </Tab.Pane>
+                    </Tab.Content>
+                </Row>
+            </Tab.Container>
         </Col>
     );
 }

@@ -2,13 +2,17 @@ import { Button, Col } from "react-bootstrap";
 import IconButton from "./IconButton";
 import { useState } from "react";
 import NewPostModal from "./NewPostModal";
+import LogOutModal from "./logOutModal";
 
 
 export default function ProfileSideBar({ handleLogout }) {
     const [show, setShow] = useState(false);
+    const [showLogOutModal, setShowLogOutModal] = useState(false);
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleClosePostModal = () => setShow(false);
+    const handleShowPostModal = () => setShow(true);
+    const handleCloseLogOutModal = () => setShowLogOutModal(false);
+    const handleShowLogOutModal = () => setShowLogOutModal(true);
 
     return (
         <Col
@@ -29,14 +33,15 @@ export default function ProfileSideBar({ handleLogout }) {
             <IconButton
                 className="bi bi-door-closed"
                 text="Logout"
-                onClick={handleLogout}
+                onClick={handleShowLogOutModal}
             />
 
-            <Button className="rounded-pill w-100 mt-4" onClick={handleShow}>
+            <Button className="rounded-pill w-100 mt-4" onClick={handleShowPostModal}>
                 Tweet
             </Button>
 
-            <NewPostModal show={show} handleClose={handleClose} />
+            <NewPostModal show={show} handleClose={handleClosePostModal} />
+            <LogOutModal show={showLogOutModal} handleClose={handleCloseLogOutModal} handleLogout={handleLogout} />
         </Col>
     );
 }
